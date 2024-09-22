@@ -46,7 +46,7 @@ export default function DownloadForm() {
 
   return (
     <div className="maincontainer">
-      <h3>Make sure you are logged in to Panopto</h3>
+      <h3>Make sure you are logged in to Panopto.</h3>
       <form onSubmit={handleDownload}>
         <div className="form-control">
           <label htmlFor="url">media or m3u8 url</label>
