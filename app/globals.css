@@ -61,3 +61,10 @@ label {
 .btn-primary:active {
   color: red;
 }
+
+h3 {
+  background-color: lightgray;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+}

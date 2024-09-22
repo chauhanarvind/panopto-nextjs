@@ -12,7 +12,6 @@ export default function DownloadForm() {
     setLoading(true);
     setMessage("");
     try {
-      console.log(url);
       const response = await fetch("https://panopto.onrender.com", {
         method: "POST",
         headers: {
@@ -21,22 +20,33 @@ export default function DownloadForm() {
         body: JSON.stringify({ url }),
       });
 
-      // Ensure you're parsing the JSON response
-      const data = await response.json();
+      if (response.ok) {
+        // Handle the file download
+        const blob = await response.blob(); // Get the file as a blob
+        const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL for the file
+        const a = document.createElement("a"); // Create a link element
+        a.href = downloadUrl;
+        a.download = "downloaded_video.mp4"; // Name of the downloaded file
+        document.body.appendChild(a);
+        a.click(); // Trigger the download
+        a.remove(); // Remove the link element
 
-      console.log(data);
-      setMessage(data.message); // Set the message from the backend
-      setLoading(false);
+        setMessage("Video downloaded successfully.");
+      } else {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.error || "Failed to download video"}`);
+      }
     } catch (error) {
       console.error("Error downloading video:", error);
       setMessage("Failed to download video.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="maincontainer">
-      <h3>Make sure you are logged in to panopto</h3>
+      <h3>Make sure you are logged in to Panopto</h3>
       <form onSubmit={handleDownload}>
         <div className="form-control">
           <label htmlFor="url">media or m3u8 url</label>
@@ -45,12 +55,13 @@ export default function DownloadForm() {
             id="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter YouTube video URL"
+            placeholder="Enter video URL"
+            required
           />
         </div>
         <div className="form-control">
-          <button className="btn-primary" type="submit">
-            {loading ? "Downloading" : "Download"}
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? "Downloading..." : "Download"}
           </button>
         </div>
       </form>
